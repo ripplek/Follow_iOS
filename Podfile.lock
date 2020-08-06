@@ -1,0 +1,20 @@
+PODS:
+  - mob_secverify (2.1.2):
+    - MOBFoundation
+  - MOBFoundation (3.2.18)
+
+DEPENDENCIES:
+  - mob_secverify
+
+SPEC REPOS:
+  trunk:
+    - mob_secverify
+    - MOBFoundation
+
+SPEC CHECKSUMS:
+  mob_secverify: a95881f60619fc38d516b73c9aeef58298f65917
+  MOBFoundation: b9dcc4bb4d3d3ade8d625190d6a77adbca563dcc
+
+PODFILE CHECKSUM: abb0bd7710d94aa121a06cb86409f2e266d52e76
+
+COCOAPODS: 1.9.1
