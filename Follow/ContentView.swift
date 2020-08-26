@@ -7,18 +7,28 @@
 //
 
 import SwiftUI
+import Combine
 
 struct ContentView: View {
     // MARK: Constants
+//    @State private var brain = CalculatorBrain.left("0")
+    @EnvironmentObject var model: CalculatorModel
+    @State private var editingHistory = false
     
     var body: some View {
         VStack(alignment: .trailing, spacing: 12) {
             Spacer()
-            Text("1234567890")
+            Button("操作历史: \(model.history.count)") {
+                self.editingHistory = true
+            }
+            .sheet(isPresented: $editingHistory, content: { HistoryView(model: self.model) })
+            
+            Text(model.brain.output)
                 .font(.system(size: 76))
                 .minimumScaleFactor(0.5)
                 .frame(minWidth: 0, maxWidth: .infinity, alignment: .trailing)
                 .lineLimit(1)
+            
             CalculatorButtonPadView()
         }
     }
@@ -26,11 +36,12 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
+        ContentView()
+//        Group {
 //            ContentView()
-            ContentView()
-                .previewDevice("iPhone SE")
-        }
+//            ContentView()
+//                .previewDevice("iPhone SE")
+//        }
     }
 }
 
@@ -54,6 +65,8 @@ struct CalculatorButton: View {
 }
 
 struct CalculatorButtonRow: View {
+//    @Binding var brain: CalculatorBrain
+    @EnvironmentObject var model: CalculatorModel
     let row: [CalculatorButtonItem]
     
     var body: some View {
@@ -63,6 +76,7 @@ struct CalculatorButtonRow: View {
                     title: item.title,
                     size: item.size,
                     backgroundColorName: item.backgroundColorName) {
+                        self.model.apply(item)
                         print(item.title)
                 }
             }
@@ -71,6 +85,8 @@ struct CalculatorButtonRow: View {
 }
 
 struct CalculatorButtonPadView: View {
+//    @Binding var brain: CalculatorBrain
+//    var model: CalculatorModel
     let pad: [[CalculatorButtonItem]] = [
         [.command(.clear), .command(.flip), .command(.percent), .op(.divide)],
         [.digit(7), .digit(8), .digit(9), .op(.multiply)],
@@ -83,6 +99,28 @@ struct CalculatorButtonPadView: View {
             ForEach(pad, id: \.self) { row in
                 CalculatorButtonRow(row: row)
             }
+        }
+    }
+}
+
+struct HistoryView: View {
+    @ObservedObject var model: CalculatorModel
+    
+    var body: some View {
+        VStack {
+            if model.history.count == 0 {
+                Text("没有历史")
+            } else {
+                HStack {
+                    Text("历史").font(.headline)
+                    Text(model.historyDetail).lineLimit(1)
+                }
+                HStack {
+                    Text("显示").font(.headline)
+                    Text(model.brain.output)
+                }
+            }
+            Slider(value: $model.slidingIndex, in: 0...Float(model.totalCount), step: 1)
         }
     }
 }
